@@ -499,11 +499,13 @@ T&& identity(T&& t) {
 }  // namespace dbg_macro
 
 // Intermediate macro "chooser"
-#define dbg_x(x, A, Func, ...) Func
+#define dbg_x(x, A, B, C, D, E, Func, ...) Func
 
 // Macro to be called and used by user
 // First param must be blank to allow for 0 argument function
-#define dbg(...) dbg_x(, ##__VA_ARGS__, dbg_VA(__VA_ARGS__), dbg_0())
+#define dbg(...)                                                 \
+  dbg_x(, ##__VA_ARGS__, dbg_5(__VA_ARGS__), dbg_4(__VA_ARGS__), \
+        dbg_3(__VA_ARGS__), dbg_2(__VA_ARGS__), dbg_1(__VA_ARGS__), dbg_0())
 
 #ifndef DBG_MACRO_DISABLE
 
@@ -512,7 +514,14 @@ T&& identity(T&& t) {
   dbg_macro::DebugOutput(__FILE__, __LINE__, __func__, "") \
       .print(dbg_macro::type_name<decltype("")>(), ("dbg call reached."))
 
-// The normal macro, prints expression and type
+// Macros for 1 through 5 args, calls the dbg_VA macro.
+#define dbg_1(A1) dbg_VA(A1)
+#define dbg_2(A1, A2) dbg_1(A1), dbg_VA(A2)
+#define dbg_3(A1, A2, A3) dbg_2(A1, A2), dbg_VA(A3)
+#define dbg_4(A1, A2, A3, A4) dbg_3(A1, A2, A3), dbg_VA(A4)
+#define dbg_5(A1, A2, A3, A4, A5) dbg_4(A1, A2, A3, A4), dbg_VA(A5)
+
+// Prints expression and type
 // We use a variadic macro to support commas inside expressions (e.g.
 // initializer lists):
 #define dbg_VA(...)                                                  \
